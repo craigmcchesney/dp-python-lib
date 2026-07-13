@@ -5,7 +5,7 @@ import warnings
 
 from . import query_pb2 as query__pb2
 
-GRPC_GENERATED_VERSION = '1.76.0'
+GRPC_GENERATED_VERSION = '1.82.1'
 GRPC_VERSION = grpc.__version__
 _version_not_supported = False
 
@@ -25,7 +25,7 @@ if _version_not_supported:
     )
 
 
-class DpQueryServiceStub(object):
+class DpQueryServiceStub:
     """
     ------------------- RPC Interfaces ---------------------------
 
@@ -33,7 +33,7 @@ class DpQueryServiceStub(object):
 
     The Query Service Interface
 
-    Defines RPC operations for data and metadata queries.
+    Defines RPC operations for data and stats queries.
     """
 
     def __init__(self, channel):
@@ -62,24 +62,44 @@ class DpQueryServiceStub(object):
                 request_serializer=query__pb2.QueryTableRequest.SerializeToString,
                 response_deserializer=query__pb2.QueryTableResponse.FromString,
                 _registered_method=True)
-        self.queryPvMetadata = channel.unary_unary(
-                '/dp.service.query.DpQueryService/queryPvMetadata',
-                request_serializer=query__pb2.QueryPvMetadataRequest.SerializeToString,
-                response_deserializer=query__pb2.QueryPvMetadataResponse.FromString,
+        self.queryPvStats = channel.unary_unary(
+                '/dp.service.query.DpQueryService/queryPvStats',
+                request_serializer=query__pb2.QueryPvStatsRequest.SerializeToString,
+                response_deserializer=query__pb2.QueryPvStatsResponse.FromString,
                 _registered_method=True)
         self.queryProviders = channel.unary_unary(
                 '/dp.service.query.DpQueryService/queryProviders',
                 request_serializer=query__pb2.QueryProvidersRequest.SerializeToString,
                 response_deserializer=query__pb2.QueryProvidersResponse.FromString,
                 _registered_method=True)
-        self.queryProviderMetadata = channel.unary_unary(
-                '/dp.service.query.DpQueryService/queryProviderMetadata',
-                request_serializer=query__pb2.QueryProviderMetadataRequest.SerializeToString,
-                response_deserializer=query__pb2.QueryProviderMetadataResponse.FromString,
+        self.queryProviderStats = channel.unary_unary(
+                '/dp.service.query.DpQueryService/queryProviderStats',
+                request_serializer=query__pb2.QueryProviderStatsRequest.SerializeToString,
+                response_deserializer=query__pb2.QueryProviderStatsResponse.FromString,
+                _registered_method=True)
+        self.queryBuckets = channel.unary_unary(
+                '/dp.service.query.DpQueryService/queryBuckets',
+                request_serializer=query__pb2.QueryBucketsRequest.SerializeToString,
+                response_deserializer=query__pb2.QueryBucketsResponse.FromString,
+                _registered_method=True)
+        self.queryBucketsStream = channel.unary_stream(
+                '/dp.service.query.DpQueryService/queryBucketsStream',
+                request_serializer=query__pb2.QueryBucketsRequest.SerializeToString,
+                response_deserializer=query__pb2.QueryBucketsResponse.FromString,
+                _registered_method=True)
+        self.querySamples = channel.unary_unary(
+                '/dp.service.query.DpQueryService/querySamples',
+                request_serializer=query__pb2.QuerySamplesRequest.SerializeToString,
+                response_deserializer=query__pb2.QuerySamplesResponse.FromString,
+                _registered_method=True)
+        self.querySamplesStream = channel.unary_stream(
+                '/dp.service.query.DpQueryService/querySamplesStream',
+                request_serializer=query__pb2.QuerySamplesRequest.SerializeToString,
+                response_deserializer=query__pb2.QuerySamplesResponse.FromString,
                 _registered_method=True)
 
 
-class DpQueryServiceServicer(object):
+class DpQueryServiceServicer:
     """
     ------------------- RPC Interfaces ---------------------------
 
@@ -87,7 +107,7 @@ class DpQueryServiceServicer(object):
 
     The Query Service Interface
 
-    Defines RPC operations for data and metadata queries.
+    Defines RPC operations for data and stats queries.
     """
 
     def queryData(self, request, context):
@@ -154,14 +174,20 @@ class DpQueryServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def queryPvMetadata(self, request, context):
+    def queryPvStats(self, request, context):
         """
-        queryPvMetadata(): Unary (non-streaming) metadata query.
+        queryPvStats(): Unary (non-streaming) PV archive statistics query.
 
-        This RPC is used by clients to learn about data sources (PVs/columns) available in the archive.  Client sends
-        a single QueryPvMetadataRequest with the query parameters, and receives a single QueryPvMetadataResponse
-        with the query results. The response may indicate rejection, error in handling, no data matching query, or
-        otherwise contains the data matching the query specification.
+        (Renamed from queryPvMetadata() — returns archive ingestion statistics,
+        not user-defined PV metadata.  See DpAnnotationService.queryPvMetadata()
+        for user-defined metadata queries.)
+
+        This RPC is used by clients to learn about data sources (PVs/columns)
+        available in the archive.  Client sends a single QueryPvStatsRequest
+        with the query parameters, and receives a single QueryPvStatsResponse
+        with the query results.  The response may indicate rejection, error in
+        handling, no data matching query, or otherwise contains the archive
+        statistics matching the query specification.
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -180,14 +206,107 @@ class DpQueryServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def queryProviderMetadata(self, request, context):
+    def queryProviderStats(self, request, context):
         """
-        queryProviderMetadata(): Unary Provider metadata query.
+        queryProviderStats(): Unary Provider archive statistics query.
 
-        This rpc is used by clients to retrieve ingestion statistics for data Providers defined in the archive.
-        It accepts a single "QueryProviderMetadataRequest" message containing the query parameters, and returns a single
-        "QueryProviderMetadataResponse".  The response may indicate an exceptional result such as rejection or error in
-        handling the request, otherwise it contains ingestion metadata for the specified data provider.
+        (Renamed from queryProviderMetadata() — returns archive ingestion
+        statistics, not user-defined provider metadata.)
+
+        This RPC is used by clients to retrieve ingestion statistics for data
+        Providers defined in the archive.  It accepts a single
+        QueryProviderStatsRequest containing the query parameters and returns a
+        single QueryProviderStatsResponse.  The response may indicate an
+        exceptional result such as rejection or error in handling the request,
+        otherwise it contains ingestion statistics for the specified data provider.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def queryBuckets(self, request, context):
+        """
+        ------------------- Query API V2 methods ---------------------------
+
+        Query API V2 introduces a common QuerySpec shared by all methods below.
+        QuerySpec describes WHAT data to retrieve (time range, PV selection,
+        configuration filtering) independently of HOW results are represented.
+        Each request bundles a QuerySpec with optional ExecutionOptions (paging) and
+        ResultRepresentation (format flags).  V1 methods above remain available for
+        backward compatibility.
+
+
+
+        queryBuckets(): Unary bucket-oriented time-series query (V2).
+
+        Executes the supplied QuerySpec and returns one page of DataBucket objects,
+        each corresponding closely to the underlying archive storage model.
+        Additional pages are retrieved by resubmitting the same QuerySpec with the
+        nextPageToken from the previous response placed in ExecutionOptions.pageToken.
+
+        Boundary buckets are returned WHOLE (not trimmed): a bucket overlapping the
+        TimeRange is returned intact, so its first/last bucket may contain individual
+        samples outside [beginTime, endTime).  Callers wanting samples strictly
+        within the range should use querySamples(), which trims.
+
+        Intended for Java applications, archive export, infrastructure services, and
+        high-performance retrieval.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def queryBucketsStream(self, request, context):
+        """
+        queryBucketsStream(): Server-streaming bucket-oriented query (V2).
+
+        Executes the supplied QuerySpec and streams QueryBucketsResponse messages
+        until the result is exhausted, the client cancels, or an error occurs.
+        Replaces the V1 bidirectional cursor protocol; the client is not responsible
+        for advancing server-side cursors.
+
+        Paging semantics for streaming: ExecutionOptions.limit controls the chunk
+        size of each streamed response.  Streaming is fire-and-consume — the server
+        streams to completion and does not emit continuation tokens (nextPageToken is
+        empty); ExecutionOptions.pageToken must be empty (a non-empty token is
+        rejected with an ExceptionalResult).  Use unary queryBuckets() when
+        resumable paging is required.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def querySamples(self, request, context):
+        """
+        querySamples(): Unary sample-oriented time-series query (V2).
+
+        Executes the supplied QuerySpec and returns one page of aligned sample data
+        as a column-oriented table.  The server assembles bucket data internally to
+        present a continuous view of the requested interval; bucket boundaries are
+        hidden from the client.
+
+        Samples are TRIMMED to the half-open TimeRange [beginTime, endTime): the
+        server retrieves overlapping buckets and drops edge samples that fall outside
+        the range, so every returned timestamp satisfies beginTime <= t < endTime.
+        (This carries forward the trimming behavior of the V1 queryTable processor.)
+
+        Expected to become the preferred method for the Python client library,
+        interactive analysis, data science, machine learning, and visualization.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def querySamplesStream(self, request, context):
+        """
+        querySamplesStream(): Server-streaming sample-oriented query (V2).
+
+        Streams aligned sample data as successive ColumnTable pages.  Paging
+        semantics match queryBucketsStream(): ExecutionOptions.limit controls the
+        number of timestamps (rows) per streamed response; streaming is
+        fire-and-consume (no continuation tokens; ExecutionOptions.pageToken must be
+        empty, a non-empty token rejected with an ExceptionalResult).  Use unary
+        querySamples() when resumable paging is required.
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -216,20 +335,40 @@ def add_DpQueryServiceServicer_to_server(servicer, server):
                     request_deserializer=query__pb2.QueryTableRequest.FromString,
                     response_serializer=query__pb2.QueryTableResponse.SerializeToString,
             ),
-            'queryPvMetadata': grpc.unary_unary_rpc_method_handler(
-                    servicer.queryPvMetadata,
-                    request_deserializer=query__pb2.QueryPvMetadataRequest.FromString,
-                    response_serializer=query__pb2.QueryPvMetadataResponse.SerializeToString,
+            'queryPvStats': grpc.unary_unary_rpc_method_handler(
+                    servicer.queryPvStats,
+                    request_deserializer=query__pb2.QueryPvStatsRequest.FromString,
+                    response_serializer=query__pb2.QueryPvStatsResponse.SerializeToString,
             ),
             'queryProviders': grpc.unary_unary_rpc_method_handler(
                     servicer.queryProviders,
                     request_deserializer=query__pb2.QueryProvidersRequest.FromString,
                     response_serializer=query__pb2.QueryProvidersResponse.SerializeToString,
             ),
-            'queryProviderMetadata': grpc.unary_unary_rpc_method_handler(
-                    servicer.queryProviderMetadata,
-                    request_deserializer=query__pb2.QueryProviderMetadataRequest.FromString,
-                    response_serializer=query__pb2.QueryProviderMetadataResponse.SerializeToString,
+            'queryProviderStats': grpc.unary_unary_rpc_method_handler(
+                    servicer.queryProviderStats,
+                    request_deserializer=query__pb2.QueryProviderStatsRequest.FromString,
+                    response_serializer=query__pb2.QueryProviderStatsResponse.SerializeToString,
+            ),
+            'queryBuckets': grpc.unary_unary_rpc_method_handler(
+                    servicer.queryBuckets,
+                    request_deserializer=query__pb2.QueryBucketsRequest.FromString,
+                    response_serializer=query__pb2.QueryBucketsResponse.SerializeToString,
+            ),
+            'queryBucketsStream': grpc.unary_stream_rpc_method_handler(
+                    servicer.queryBucketsStream,
+                    request_deserializer=query__pb2.QueryBucketsRequest.FromString,
+                    response_serializer=query__pb2.QueryBucketsResponse.SerializeToString,
+            ),
+            'querySamples': grpc.unary_unary_rpc_method_handler(
+                    servicer.querySamples,
+                    request_deserializer=query__pb2.QuerySamplesRequest.FromString,
+                    response_serializer=query__pb2.QuerySamplesResponse.SerializeToString,
+            ),
+            'querySamplesStream': grpc.unary_stream_rpc_method_handler(
+                    servicer.querySamplesStream,
+                    request_deserializer=query__pb2.QuerySamplesRequest.FromString,
+                    response_serializer=query__pb2.QuerySamplesResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -239,7 +378,7 @@ def add_DpQueryServiceServicer_to_server(servicer, server):
 
 
  # This class is part of an EXPERIMENTAL API.
-class DpQueryService(object):
+class DpQueryService:
     """
     ------------------- RPC Interfaces ---------------------------
 
@@ -247,7 +386,7 @@ class DpQueryService(object):
 
     The Query Service Interface
 
-    Defines RPC operations for data and metadata queries.
+    Defines RPC operations for data and stats queries.
     """
 
     @staticmethod
@@ -359,7 +498,7 @@ class DpQueryService(object):
             _registered_method=True)
 
     @staticmethod
-    def queryPvMetadata(request,
+    def queryPvStats(request,
             target,
             options=(),
             channel_credentials=None,
@@ -372,9 +511,9 @@ class DpQueryService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/dp.service.query.DpQueryService/queryPvMetadata',
-            query__pb2.QueryPvMetadataRequest.SerializeToString,
-            query__pb2.QueryPvMetadataResponse.FromString,
+            '/dp.service.query.DpQueryService/queryPvStats',
+            query__pb2.QueryPvStatsRequest.SerializeToString,
+            query__pb2.QueryPvStatsResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -413,7 +552,7 @@ class DpQueryService(object):
             _registered_method=True)
 
     @staticmethod
-    def queryProviderMetadata(request,
+    def queryProviderStats(request,
             target,
             options=(),
             channel_credentials=None,
@@ -426,9 +565,117 @@ class DpQueryService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/dp.service.query.DpQueryService/queryProviderMetadata',
-            query__pb2.QueryProviderMetadataRequest.SerializeToString,
-            query__pb2.QueryProviderMetadataResponse.FromString,
+            '/dp.service.query.DpQueryService/queryProviderStats',
+            query__pb2.QueryProviderStatsRequest.SerializeToString,
+            query__pb2.QueryProviderStatsResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def queryBuckets(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/dp.service.query.DpQueryService/queryBuckets',
+            query__pb2.QueryBucketsRequest.SerializeToString,
+            query__pb2.QueryBucketsResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def queryBucketsStream(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_stream(
+            request,
+            target,
+            '/dp.service.query.DpQueryService/queryBucketsStream',
+            query__pb2.QueryBucketsRequest.SerializeToString,
+            query__pb2.QueryBucketsResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def querySamples(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/dp.service.query.DpQueryService/querySamples',
+            query__pb2.QuerySamplesRequest.SerializeToString,
+            query__pb2.QuerySamplesResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def querySamplesStream(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_stream(
+            request,
+            target,
+            '/dp.service.query.DpQueryService/querySamplesStream',
+            query__pb2.QuerySamplesRequest.SerializeToString,
+            query__pb2.QuerySamplesResponse.FromString,
             options,
             channel_credentials,
             insecure,

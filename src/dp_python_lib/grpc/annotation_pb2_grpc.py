@@ -5,7 +5,7 @@ import warnings
 
 from . import annotation_pb2 as annotation__pb2
 
-GRPC_GENERATED_VERSION = '1.76.0'
+GRPC_GENERATED_VERSION = '1.82.1'
 GRPC_VERSION = grpc.__version__
 _version_not_supported = False
 
@@ -25,7 +25,7 @@ if _version_not_supported:
     )
 
 
-class DpAnnotationServiceStub(object):
+class DpAnnotationServiceStub:
     """
     ------------------- RPC Interfaces ---------------------------
 
@@ -67,9 +67,104 @@ class DpAnnotationServiceStub(object):
                 request_serializer=annotation__pb2.ExportDataRequest.SerializeToString,
                 response_deserializer=annotation__pb2.ExportDataResponse.FromString,
                 _registered_method=True)
+        self.savePvMetadata = channel.unary_unary(
+                '/dp.service.annotation.DpAnnotationService/savePvMetadata',
+                request_serializer=annotation__pb2.SavePvMetadataRequest.SerializeToString,
+                response_deserializer=annotation__pb2.SavePvMetadataResponse.FromString,
+                _registered_method=True)
+        self.queryPvMetadata = channel.unary_unary(
+                '/dp.service.annotation.DpAnnotationService/queryPvMetadata',
+                request_serializer=annotation__pb2.QueryPvMetadataRequest.SerializeToString,
+                response_deserializer=annotation__pb2.QueryPvMetadataResponse.FromString,
+                _registered_method=True)
+        self.getPvMetadata = channel.unary_unary(
+                '/dp.service.annotation.DpAnnotationService/getPvMetadata',
+                request_serializer=annotation__pb2.GetPvMetadataRequest.SerializeToString,
+                response_deserializer=annotation__pb2.GetPvMetadataResponse.FromString,
+                _registered_method=True)
+        self.patchPvMetadata = channel.unary_unary(
+                '/dp.service.annotation.DpAnnotationService/patchPvMetadata',
+                request_serializer=annotation__pb2.PatchPvMetadataRequest.SerializeToString,
+                response_deserializer=annotation__pb2.PatchPvMetadataResponse.FromString,
+                _registered_method=True)
+        self.deletePvMetadata = channel.unary_unary(
+                '/dp.service.annotation.DpAnnotationService/deletePvMetadata',
+                request_serializer=annotation__pb2.DeletePvMetadataRequest.SerializeToString,
+                response_deserializer=annotation__pb2.DeletePvMetadataResponse.FromString,
+                _registered_method=True)
+        self.bulkSavePvMetadata = channel.unary_unary(
+                '/dp.service.annotation.DpAnnotationService/bulkSavePvMetadata',
+                request_serializer=annotation__pb2.BulkSavePvMetadataRequest.SerializeToString,
+                response_deserializer=annotation__pb2.BulkSavePvMetadataResponse.FromString,
+                _registered_method=True)
+        self.saveConfiguration = channel.unary_unary(
+                '/dp.service.annotation.DpAnnotationService/saveConfiguration',
+                request_serializer=annotation__pb2.SaveConfigurationRequest.SerializeToString,
+                response_deserializer=annotation__pb2.SaveConfigurationResponse.FromString,
+                _registered_method=True)
+        self.getConfiguration = channel.unary_unary(
+                '/dp.service.annotation.DpAnnotationService/getConfiguration',
+                request_serializer=annotation__pb2.GetConfigurationRequest.SerializeToString,
+                response_deserializer=annotation__pb2.GetConfigurationResponse.FromString,
+                _registered_method=True)
+        self.queryConfigurations = channel.unary_unary(
+                '/dp.service.annotation.DpAnnotationService/queryConfigurations',
+                request_serializer=annotation__pb2.QueryConfigurationsRequest.SerializeToString,
+                response_deserializer=annotation__pb2.QueryConfigurationsResponse.FromString,
+                _registered_method=True)
+        self.deleteConfiguration = channel.unary_unary(
+                '/dp.service.annotation.DpAnnotationService/deleteConfiguration',
+                request_serializer=annotation__pb2.DeleteConfigurationRequest.SerializeToString,
+                response_deserializer=annotation__pb2.DeleteConfigurationResponse.FromString,
+                _registered_method=True)
+        self.patchConfiguration = channel.unary_unary(
+                '/dp.service.annotation.DpAnnotationService/patchConfiguration',
+                request_serializer=annotation__pb2.PatchConfigurationRequest.SerializeToString,
+                response_deserializer=annotation__pb2.PatchConfigurationResponse.FromString,
+                _registered_method=True)
+        self.bulkSaveConfiguration = channel.unary_unary(
+                '/dp.service.annotation.DpAnnotationService/bulkSaveConfiguration',
+                request_serializer=annotation__pb2.BulkSaveConfigurationRequest.SerializeToString,
+                response_deserializer=annotation__pb2.BulkSaveConfigurationResponse.FromString,
+                _registered_method=True)
+        self.saveConfigurationActivation = channel.unary_unary(
+                '/dp.service.annotation.DpAnnotationService/saveConfigurationActivation',
+                request_serializer=annotation__pb2.SaveConfigurationActivationRequest.SerializeToString,
+                response_deserializer=annotation__pb2.SaveConfigurationActivationResponse.FromString,
+                _registered_method=True)
+        self.getConfigurationActivation = channel.unary_unary(
+                '/dp.service.annotation.DpAnnotationService/getConfigurationActivation',
+                request_serializer=annotation__pb2.GetConfigurationActivationRequest.SerializeToString,
+                response_deserializer=annotation__pb2.GetConfigurationActivationResponse.FromString,
+                _registered_method=True)
+        self.queryConfigurationActivations = channel.unary_unary(
+                '/dp.service.annotation.DpAnnotationService/queryConfigurationActivations',
+                request_serializer=annotation__pb2.QueryConfigurationActivationsRequest.SerializeToString,
+                response_deserializer=annotation__pb2.QueryConfigurationActivationsResponse.FromString,
+                _registered_method=True)
+        self.deleteConfigurationActivation = channel.unary_unary(
+                '/dp.service.annotation.DpAnnotationService/deleteConfigurationActivation',
+                request_serializer=annotation__pb2.DeleteConfigurationActivationRequest.SerializeToString,
+                response_deserializer=annotation__pb2.DeleteConfigurationActivationResponse.FromString,
+                _registered_method=True)
+        self.patchConfigurationActivation = channel.unary_unary(
+                '/dp.service.annotation.DpAnnotationService/patchConfigurationActivation',
+                request_serializer=annotation__pb2.PatchConfigurationActivationRequest.SerializeToString,
+                response_deserializer=annotation__pb2.PatchConfigurationActivationResponse.FromString,
+                _registered_method=True)
+        self.bulkSaveConfigurationActivation = channel.unary_unary(
+                '/dp.service.annotation.DpAnnotationService/bulkSaveConfigurationActivation',
+                request_serializer=annotation__pb2.BulkSaveConfigurationActivationRequest.SerializeToString,
+                response_deserializer=annotation__pb2.BulkSaveConfigurationActivationResponse.FromString,
+                _registered_method=True)
+        self.getActiveConfigurations = channel.unary_unary(
+                '/dp.service.annotation.DpAnnotationService/getActiveConfigurations',
+                request_serializer=annotation__pb2.GetActiveConfigurationsRequest.SerializeToString,
+                response_deserializer=annotation__pb2.GetActiveConfigurationsResponse.FromString,
+                _registered_method=True)
 
 
-class DpAnnotationServiceServicer(object):
+class DpAnnotationServiceServicer:
     """
     ------------------- RPC Interfaces ---------------------------
 
@@ -144,6 +239,340 @@ class DpAnnotationServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def savePvMetadata(self, request, context):
+        """
+        savePvMetadata()
+
+        Create or replace the metadata record for the specified PV.
+
+        Full replace (upsert) semantics: if a record does not exist it is created;
+        if a record already exists, ALL fields (aliases, tags, attributes,
+        description, modifiedBy) are replaced with the request contents.
+        Callers must supply the complete desired state on every call — fields
+        omitted from the request are not preserved.  Use patchPvMetadata()
+        (future) for partial updates.
+
+        The response may indicate rejection, an error handling the request, or
+        successful handling of the request.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def queryPvMetadata(self, request, context):
+        """
+        queryPvMetadata()
+
+        Query PV metadata records using structured search criteria.
+
+        The response may indicate rejection, an error handling the request, or
+        a PvMetadataResult containing the matching records and pagination token.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def getPvMetadata(self, request, context):
+        """
+        getPvMetadata()
+
+        Retrieve a single PV metadata record by canonical PV name or alias.
+        Provided as a convenience over queryPvMetadata() for the common
+        single-record lookup case.
+
+        The response may indicate rejection, an error handling the request, or
+        a GetPvMetadataResponse containing the matching record.  If no record
+        is found for the specified name or alias, an ExceptionalResult is returned.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def patchPvMetadata(self, request, context):
+        """
+        patchPvMetadata()
+
+        Partial update of an existing PV metadata record.  Allows individual
+        fields (aliases, tags, attributes, description, modifiedBy) to be updated
+        without replacing the entire record, unlike the full-replace semantics
+        of savePvMetadata().
+
+        NOT YET IMPLEMENTED — calling this method returns an error response.
+        Planned for a future release.  Field mask design is deferred.
+
+        This method is defined now to reserve its name and message shapes as part
+        of the standard CRUD pattern for metadata APIs in this service.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def deletePvMetadata(self, request, context):
+        """
+        deletePvMetadata()
+
+        Delete the metadata record for the specified canonical PV name or alias.
+
+        The response may indicate rejection, an error handling the request, or
+        a DeletePvMetadataResult confirming the name of the deleted record.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def bulkSavePvMetadata(self, request, context):
+        """
+        bulkSavePvMetadata()
+
+        Bulk create or replace multiple PV metadata records in a single request.
+        Each record uses the same full-replace upsert semantics as savePvMetadata().
+        Intended for large initial imports or bulk synchronization use cases.
+
+        NOT YET IMPLEMENTED — calling this method returns an error response.
+        Planned for a future release.
+
+        This method is defined now to reserve its name and message shapes as part
+        of the standard bulk-write pattern for metadata APIs in this service.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def saveConfiguration(self, request, context):
+        """
+        ------------------- Configuration Definition CRUD ---------------------------
+
+
+
+        saveConfiguration()
+
+        Create or replace the metadata record for the specified machine configuration.
+
+        Full replace (upsert) semantics: if a record does not exist it is created;
+        if a record already exists, ALL fields (category, description,
+        parentConfigurationName, tags, attributes, modifiedBy) are replaced with
+        the request contents.  Callers must supply the complete desired state on
+        every call — fields omitted from the request are not preserved.
+        Use patchConfiguration() (future) for partial updates.
+
+        The response may indicate rejection, an error handling the request, or
+        successful handling of the request.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def getConfiguration(self, request, context):
+        """
+        getConfiguration()
+
+        Retrieve a single Configuration record by configurationName.
+        Provided as a convenience over queryConfigurations() for the common
+        single-record lookup case.
+
+        The response may indicate rejection, an error handling the request, or
+        a GetConfigurationResult containing the matching record.  If no record
+        is found, an ExceptionalResult is returned.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def queryConfigurations(self, request, context):
+        """
+        queryConfigurations()
+
+        Query Configuration records using structured search criteria.
+
+        The response may indicate rejection, an error handling the request, or
+        a QueryConfigurationsResult containing the matching records and pagination token.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def deleteConfiguration(self, request, context):
+        """
+        deleteConfiguration()
+
+        Delete the Configuration record for the specified configurationName.
+        The request is rejected if ConfigurationActivation records exist for the
+        configuration; delete associated activations first.
+
+        The response may indicate rejection, an error handling the request, or
+        a DeleteConfigurationResult confirming the name of the deleted record.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def patchConfiguration(self, request, context):
+        """
+        patchConfiguration()
+
+        Partial update of an existing Configuration record.  Allows individual
+        fields to be updated without replacing the entire record, unlike the
+        full-replace semantics of saveConfiguration().
+
+        NOT YET IMPLEMENTED — calling this method returns an error response.
+        Planned for a future release.
+
+        This method is defined now to reserve its name and message shapes as part
+        of the standard CRUD pattern for metadata APIs in this service.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def bulkSaveConfiguration(self, request, context):
+        """
+        bulkSaveConfiguration()
+
+        Bulk create or replace multiple Configuration records in a single request.
+        Each record uses the same full-replace upsert semantics as saveConfiguration().
+        Intended for large initial imports or bulk synchronization use cases.
+
+        NOT YET IMPLEMENTED — calling this method returns an error response.
+        Planned for a future release.
+
+        This method is defined now to reserve its name and message shapes as part
+        of the standard bulk-write pattern for metadata APIs in this service.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def saveConfigurationActivation(self, request, context):
+        """
+        ------------------- Configuration Activation CRUD ---------------------------
+
+
+
+        saveConfigurationActivation()
+
+        Create or replace an activation record indicating the time interval during
+        which a Configuration was active.
+
+        Full replace (upsert) semantics: if a record does not exist it is created;
+        if a record already exists (matched by clientActivationId, or by composite
+        key configurationName + startTime if clientActivationId is absent), ALL
+        fields are replaced with the request contents.  Callers must supply the
+        complete desired state on every call — fields omitted from the request are
+        not preserved.  Use patchConfigurationActivation() (future) for partial updates.
+
+        To close an open-ended activation, call saveConfigurationActivation() with
+        endTime set to the desired close time.
+
+        The response may indicate rejection, an error handling the request, or
+        successful handling of the request.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def getConfigurationActivation(self, request, context):
+        """
+        getConfigurationActivation()
+
+        Retrieve a single ConfigurationActivation record by clientActivationId or
+        composite key (configurationName + startTime).
+
+        The response may indicate rejection, an error handling the request, or
+        a GetConfigurationActivationResult containing the matching record.  If no
+        record is found, an ExceptionalResult is returned.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def queryConfigurationActivations(self, request, context):
+        """
+        queryConfigurationActivations()
+
+        Query ConfigurationActivation records using structured search criteria.
+
+        The response may indicate rejection, an error handling the request, or
+        a QueryConfigurationActivationsResult containing the matching records and
+        pagination token.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def deleteConfigurationActivation(self, request, context):
+        """
+        deleteConfigurationActivation()
+
+        Delete a ConfigurationActivation record by clientActivationId or composite
+        key (configurationName + startTime).
+
+        The response may indicate rejection, an error handling the request, or
+        a DeleteConfigurationActivationResult confirming the ID of the deleted record.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def patchConfigurationActivation(self, request, context):
+        """
+        patchConfigurationActivation()
+
+        Partial update of an existing ConfigurationActivation record.  Allows
+        individual fields to be updated without replacing the entire record, unlike
+        the full-replace semantics of saveConfigurationActivation().
+
+        NOT YET IMPLEMENTED — calling this method returns an error response.
+        Planned for a future release.
+
+        This method is defined now to reserve its name and message shapes as part
+        of the standard CRUD pattern for metadata APIs in this service.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def bulkSaveConfigurationActivation(self, request, context):
+        """
+        bulkSaveConfigurationActivation()
+
+        Bulk create or replace multiple ConfigurationActivation records in a single
+        request.  Each record uses the same full-replace upsert semantics as
+        saveConfigurationActivation().  Intended for bulk loading of activation
+        records from operational calendars.
+
+        NOT YET IMPLEMENTED — calling this method returns an error response.
+        Planned for a future release.
+
+        This method is defined now to reserve its name and message shapes as part
+        of the standard bulk-write pattern for metadata APIs in this service.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def getActiveConfigurations(self, request, context):
+        """
+        ------------------- Active Configuration Query ---------------------------
+
+
+
+        getActiveConfigurations()
+
+        Returns all ConfigurationActivation records in effect at the specified
+        timestamp, i.e., records where:
+        startTime <= timestamp AND (endTime is absent OR endTime > timestamp)
+
+        timestamp is required.  Requests with an absent (zero-value) timestamp
+        are rejected with an ExceptionalResult.
+
+        An empty result (no active configurations at the specified time) is
+        returned as a GetActiveConfigurationsResult with an empty list, not
+        an ExceptionalResult.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_DpAnnotationServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -172,6 +601,101 @@ def add_DpAnnotationServiceServicer_to_server(servicer, server):
                     request_deserializer=annotation__pb2.ExportDataRequest.FromString,
                     response_serializer=annotation__pb2.ExportDataResponse.SerializeToString,
             ),
+            'savePvMetadata': grpc.unary_unary_rpc_method_handler(
+                    servicer.savePvMetadata,
+                    request_deserializer=annotation__pb2.SavePvMetadataRequest.FromString,
+                    response_serializer=annotation__pb2.SavePvMetadataResponse.SerializeToString,
+            ),
+            'queryPvMetadata': grpc.unary_unary_rpc_method_handler(
+                    servicer.queryPvMetadata,
+                    request_deserializer=annotation__pb2.QueryPvMetadataRequest.FromString,
+                    response_serializer=annotation__pb2.QueryPvMetadataResponse.SerializeToString,
+            ),
+            'getPvMetadata': grpc.unary_unary_rpc_method_handler(
+                    servicer.getPvMetadata,
+                    request_deserializer=annotation__pb2.GetPvMetadataRequest.FromString,
+                    response_serializer=annotation__pb2.GetPvMetadataResponse.SerializeToString,
+            ),
+            'patchPvMetadata': grpc.unary_unary_rpc_method_handler(
+                    servicer.patchPvMetadata,
+                    request_deserializer=annotation__pb2.PatchPvMetadataRequest.FromString,
+                    response_serializer=annotation__pb2.PatchPvMetadataResponse.SerializeToString,
+            ),
+            'deletePvMetadata': grpc.unary_unary_rpc_method_handler(
+                    servicer.deletePvMetadata,
+                    request_deserializer=annotation__pb2.DeletePvMetadataRequest.FromString,
+                    response_serializer=annotation__pb2.DeletePvMetadataResponse.SerializeToString,
+            ),
+            'bulkSavePvMetadata': grpc.unary_unary_rpc_method_handler(
+                    servicer.bulkSavePvMetadata,
+                    request_deserializer=annotation__pb2.BulkSavePvMetadataRequest.FromString,
+                    response_serializer=annotation__pb2.BulkSavePvMetadataResponse.SerializeToString,
+            ),
+            'saveConfiguration': grpc.unary_unary_rpc_method_handler(
+                    servicer.saveConfiguration,
+                    request_deserializer=annotation__pb2.SaveConfigurationRequest.FromString,
+                    response_serializer=annotation__pb2.SaveConfigurationResponse.SerializeToString,
+            ),
+            'getConfiguration': grpc.unary_unary_rpc_method_handler(
+                    servicer.getConfiguration,
+                    request_deserializer=annotation__pb2.GetConfigurationRequest.FromString,
+                    response_serializer=annotation__pb2.GetConfigurationResponse.SerializeToString,
+            ),
+            'queryConfigurations': grpc.unary_unary_rpc_method_handler(
+                    servicer.queryConfigurations,
+                    request_deserializer=annotation__pb2.QueryConfigurationsRequest.FromString,
+                    response_serializer=annotation__pb2.QueryConfigurationsResponse.SerializeToString,
+            ),
+            'deleteConfiguration': grpc.unary_unary_rpc_method_handler(
+                    servicer.deleteConfiguration,
+                    request_deserializer=annotation__pb2.DeleteConfigurationRequest.FromString,
+                    response_serializer=annotation__pb2.DeleteConfigurationResponse.SerializeToString,
+            ),
+            'patchConfiguration': grpc.unary_unary_rpc_method_handler(
+                    servicer.patchConfiguration,
+                    request_deserializer=annotation__pb2.PatchConfigurationRequest.FromString,
+                    response_serializer=annotation__pb2.PatchConfigurationResponse.SerializeToString,
+            ),
+            'bulkSaveConfiguration': grpc.unary_unary_rpc_method_handler(
+                    servicer.bulkSaveConfiguration,
+                    request_deserializer=annotation__pb2.BulkSaveConfigurationRequest.FromString,
+                    response_serializer=annotation__pb2.BulkSaveConfigurationResponse.SerializeToString,
+            ),
+            'saveConfigurationActivation': grpc.unary_unary_rpc_method_handler(
+                    servicer.saveConfigurationActivation,
+                    request_deserializer=annotation__pb2.SaveConfigurationActivationRequest.FromString,
+                    response_serializer=annotation__pb2.SaveConfigurationActivationResponse.SerializeToString,
+            ),
+            'getConfigurationActivation': grpc.unary_unary_rpc_method_handler(
+                    servicer.getConfigurationActivation,
+                    request_deserializer=annotation__pb2.GetConfigurationActivationRequest.FromString,
+                    response_serializer=annotation__pb2.GetConfigurationActivationResponse.SerializeToString,
+            ),
+            'queryConfigurationActivations': grpc.unary_unary_rpc_method_handler(
+                    servicer.queryConfigurationActivations,
+                    request_deserializer=annotation__pb2.QueryConfigurationActivationsRequest.FromString,
+                    response_serializer=annotation__pb2.QueryConfigurationActivationsResponse.SerializeToString,
+            ),
+            'deleteConfigurationActivation': grpc.unary_unary_rpc_method_handler(
+                    servicer.deleteConfigurationActivation,
+                    request_deserializer=annotation__pb2.DeleteConfigurationActivationRequest.FromString,
+                    response_serializer=annotation__pb2.DeleteConfigurationActivationResponse.SerializeToString,
+            ),
+            'patchConfigurationActivation': grpc.unary_unary_rpc_method_handler(
+                    servicer.patchConfigurationActivation,
+                    request_deserializer=annotation__pb2.PatchConfigurationActivationRequest.FromString,
+                    response_serializer=annotation__pb2.PatchConfigurationActivationResponse.SerializeToString,
+            ),
+            'bulkSaveConfigurationActivation': grpc.unary_unary_rpc_method_handler(
+                    servicer.bulkSaveConfigurationActivation,
+                    request_deserializer=annotation__pb2.BulkSaveConfigurationActivationRequest.FromString,
+                    response_serializer=annotation__pb2.BulkSaveConfigurationActivationResponse.SerializeToString,
+            ),
+            'getActiveConfigurations': grpc.unary_unary_rpc_method_handler(
+                    servicer.getActiveConfigurations,
+                    request_deserializer=annotation__pb2.GetActiveConfigurationsRequest.FromString,
+                    response_serializer=annotation__pb2.GetActiveConfigurationsResponse.SerializeToString,
+            ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
             'dp.service.annotation.DpAnnotationService', rpc_method_handlers)
@@ -180,7 +704,7 @@ def add_DpAnnotationServiceServicer_to_server(servicer, server):
 
 
  # This class is part of an EXPERIMENTAL API.
-class DpAnnotationService(object):
+class DpAnnotationService:
     """
     ------------------- RPC Interfaces ---------------------------
 
@@ -316,6 +840,519 @@ class DpAnnotationService(object):
             '/dp.service.annotation.DpAnnotationService/exportData',
             annotation__pb2.ExportDataRequest.SerializeToString,
             annotation__pb2.ExportDataResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def savePvMetadata(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/dp.service.annotation.DpAnnotationService/savePvMetadata',
+            annotation__pb2.SavePvMetadataRequest.SerializeToString,
+            annotation__pb2.SavePvMetadataResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def queryPvMetadata(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/dp.service.annotation.DpAnnotationService/queryPvMetadata',
+            annotation__pb2.QueryPvMetadataRequest.SerializeToString,
+            annotation__pb2.QueryPvMetadataResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def getPvMetadata(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/dp.service.annotation.DpAnnotationService/getPvMetadata',
+            annotation__pb2.GetPvMetadataRequest.SerializeToString,
+            annotation__pb2.GetPvMetadataResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def patchPvMetadata(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/dp.service.annotation.DpAnnotationService/patchPvMetadata',
+            annotation__pb2.PatchPvMetadataRequest.SerializeToString,
+            annotation__pb2.PatchPvMetadataResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def deletePvMetadata(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/dp.service.annotation.DpAnnotationService/deletePvMetadata',
+            annotation__pb2.DeletePvMetadataRequest.SerializeToString,
+            annotation__pb2.DeletePvMetadataResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def bulkSavePvMetadata(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/dp.service.annotation.DpAnnotationService/bulkSavePvMetadata',
+            annotation__pb2.BulkSavePvMetadataRequest.SerializeToString,
+            annotation__pb2.BulkSavePvMetadataResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def saveConfiguration(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/dp.service.annotation.DpAnnotationService/saveConfiguration',
+            annotation__pb2.SaveConfigurationRequest.SerializeToString,
+            annotation__pb2.SaveConfigurationResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def getConfiguration(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/dp.service.annotation.DpAnnotationService/getConfiguration',
+            annotation__pb2.GetConfigurationRequest.SerializeToString,
+            annotation__pb2.GetConfigurationResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def queryConfigurations(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/dp.service.annotation.DpAnnotationService/queryConfigurations',
+            annotation__pb2.QueryConfigurationsRequest.SerializeToString,
+            annotation__pb2.QueryConfigurationsResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def deleteConfiguration(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/dp.service.annotation.DpAnnotationService/deleteConfiguration',
+            annotation__pb2.DeleteConfigurationRequest.SerializeToString,
+            annotation__pb2.DeleteConfigurationResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def patchConfiguration(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/dp.service.annotation.DpAnnotationService/patchConfiguration',
+            annotation__pb2.PatchConfigurationRequest.SerializeToString,
+            annotation__pb2.PatchConfigurationResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def bulkSaveConfiguration(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/dp.service.annotation.DpAnnotationService/bulkSaveConfiguration',
+            annotation__pb2.BulkSaveConfigurationRequest.SerializeToString,
+            annotation__pb2.BulkSaveConfigurationResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def saveConfigurationActivation(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/dp.service.annotation.DpAnnotationService/saveConfigurationActivation',
+            annotation__pb2.SaveConfigurationActivationRequest.SerializeToString,
+            annotation__pb2.SaveConfigurationActivationResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def getConfigurationActivation(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/dp.service.annotation.DpAnnotationService/getConfigurationActivation',
+            annotation__pb2.GetConfigurationActivationRequest.SerializeToString,
+            annotation__pb2.GetConfigurationActivationResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def queryConfigurationActivations(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/dp.service.annotation.DpAnnotationService/queryConfigurationActivations',
+            annotation__pb2.QueryConfigurationActivationsRequest.SerializeToString,
+            annotation__pb2.QueryConfigurationActivationsResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def deleteConfigurationActivation(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/dp.service.annotation.DpAnnotationService/deleteConfigurationActivation',
+            annotation__pb2.DeleteConfigurationActivationRequest.SerializeToString,
+            annotation__pb2.DeleteConfigurationActivationResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def patchConfigurationActivation(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/dp.service.annotation.DpAnnotationService/patchConfigurationActivation',
+            annotation__pb2.PatchConfigurationActivationRequest.SerializeToString,
+            annotation__pb2.PatchConfigurationActivationResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def bulkSaveConfigurationActivation(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/dp.service.annotation.DpAnnotationService/bulkSaveConfigurationActivation',
+            annotation__pb2.BulkSaveConfigurationActivationRequest.SerializeToString,
+            annotation__pb2.BulkSaveConfigurationActivationResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def getActiveConfigurations(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/dp.service.annotation.DpAnnotationService/getActiveConfigurations',
+            annotation__pb2.GetActiveConfigurationsRequest.SerializeToString,
+            annotation__pb2.GetActiveConfigurationsResponse.FromString,
             options,
             channel_credentials,
             insecure,
