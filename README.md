@@ -4,7 +4,7 @@ This repo contains a python client API library for the [Machine Learning Data Pl
 
 NOTE: The dp-grpc repo includes an Actions workflow (generate-python-stubs.yml) for generating Python stubs from the API definition.  It can be triggered manually, as part of the development process, and is triggered automatically when a new release tag is created (e.g., a tag prefixed with "rel-").  The workflow creates a pull request to merge the files to this dp-python-lib repo, in the [src/dp_python_lib/grpc](src/dp_python_lib/grpc) directory.  Because the files are generated, they should not be edited manually.  Any required changes should be made to the process that generates the stubs, not the generated files themselves.
 
-NOTE: This repo is a work in progess and requires additional work before it is useful for building Python client applications!
+NOTE: This repo is a work in progress and requires additional work before it is useful for building Python client applications!
 
 ## Status
 
@@ -35,6 +35,35 @@ A simple example for calling the Ingestion Service registerProvider() API method
         result = self.client.ingestion_client.register_provider(params)
 ```
 
+The Annotation Service PV metadata API is accessed via the `annotation` facade, which groups the feature-scoped clients that share the Annotation Service connection.  PV metadata methods are exposed under `client.annotation.pv_metadata`:
+```
+        client = MldpClient()
+        pv_client = client.annotation.pv_metadata
+
+        # Save metadata for a PV
+        save_params = SavePvMetadataRequestParams(
+            pv_name="ABC:1",
+            aliases=["abc-one"],
+            tags=["vacuum", "beam"],
+            attributes={"unit": "V", "system": "vacuum"},
+            modified_by="operator",
+            description="Vacuum gauge readback",
+        )
+        save_result = pv_client.save_pv_metadata(save_params)
+
+        # Get metadata by PV name or alias
+        get_result = pv_client.get_pv_metadata("abc-one")
+        metadata = get_result.pv_metadata
+
+        # Query metadata using criterion helpers; iterate transparently across pages
+        from dp_python_lib.client import PvMetadataQuery as Q
+        for pv in pv_client.iter_pv_metadata([Q.pv_name(prefix=["ABC:"]), Q.tags(["vacuum"])]):
+            print(pv.pvName)
+
+        # Delete metadata by PV name or alias
+        delete_result = pv_client.delete_pv_metadata("ABC:1")
+```
+
 This same pattern will be utilized for calling all the various service APIs.  The intention of the MldpClient class is to hide the details of the gRPC APIs to the extent that is possible.  A good place to look for additional examples is in the [integration test directory](tests/integration).
 
 ## TODO
@@ -51,6 +80,7 @@ This same pattern will be utilized for calling all the various service APIs.  Th
     * queryProviders() - Retrieves Provider information.
     * queryProviderMetadata() - Retrieves ingestion metadata for providers.
   * Annotation Service
+    * PV metadata API - DONE (client.annotation.pv_metadata): savePvMetadata(), getPvMetadata(), queryPvMetadata(), deletePvMetadata().
     * saveDataSet() - Creates or saves a dataset including a collection of PVs and time ranges.
     * queryDataSets() - Retrieves saved datasets.
     * saveAnnotation() - Creates or saves an annotation targeting a dataset.
