@@ -64,6 +64,15 @@ class TestToTimestamp(unittest.TestCase):
         ts = to_timestamp(dt)
         self.assertEqual(ts.epochSeconds, int(dt.timestamp()))
 
+    def test_negative_epoch_rejected_by_uint64_field(self):
+        # common.Timestamp.epochSeconds is uint64, so pre-1970 (negative) epochs cannot be represented.
+        # Flooring keeps nanoseconds normalized, and the negative seconds are cleanly rejected at assignment
+        # (ValueError: out of range) rather than silently producing an incorrect (seconds, nanos) pair.
+        with self.assertRaises(ValueError):
+            to_timestamp(-1.25)
+        with self.assertRaises(ValueError):
+            to_timestamp(-5)
+
     def test_naive_datetime_raises(self):
         with self.assertRaises(ValueError):
             to_timestamp(datetime(2023, 11, 14, 22, 13, 20))

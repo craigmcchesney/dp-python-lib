@@ -189,6 +189,29 @@ class TestActivationKeyValidation(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.client._build_get_configuration_activation_request("act-1", "cfg-1", None)
 
+    def test_empty_string_id_treated_as_not_provided(self):
+        # An empty client_activation_id must not silently set an empty oneof; with no composite key it is an error.
+        with self.assertRaises(ValueError):
+            self.client._build_get_configuration_activation_request("", None, None)
+        with self.assertRaises(ValueError):
+            self.client._build_delete_configuration_activation_request("", None, None)
+
+    def test_empty_string_id_does_not_block_composite(self):
+        # Empty id + a valid composite key should be accepted as the composite form (empty id ignored).
+        request = self.client._build_get_configuration_activation_request("", "cfg-1", 100)
+        self.assertEqual(request.WhichOneof("key"), "compositeKey")
+        self.assertEqual(request.compositeKey.configurationName, "cfg-1")
+
+    def test_empty_configuration_name_treated_as_not_provided(self):
+        with self.assertRaises(ValueError):
+            self.client._build_get_configuration_activation_request(None, "", 100)
+
+    def test_composite_with_epoch_zero_start_time_is_valid(self):
+        # start_time of epoch 0 is falsy but legitimate; presence is keyed on "is not None".
+        request = self.client._build_get_configuration_activation_request(None, "cfg-1", 0)
+        self.assertEqual(request.WhichOneof("key"), "compositeKey")
+        self.assertEqual(request.compositeKey.startTime.epochSeconds, 0)
+
 
 class TestSaveConfigurationActivation(unittest.TestCase):
     def setUp(self):

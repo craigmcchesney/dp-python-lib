@@ -1,3 +1,4 @@
+import math
 from datetime import datetime, timezone
 from typing import Optional, Dict, List, Iterator, Union
 from dp_python_lib.client.service_api_client_base import ServiceApiClientBase
@@ -25,7 +26,8 @@ def to_timestamp(value: TimestampInput) -> common_pb2.Timestamp:
 
     :param value: The time value to convert.
     :return: An equivalent common.Timestamp.
-    :raises ValueError: if a datetime is naive (has no tzinfo).
+    :raises ValueError: if a datetime is naive (has no tzinfo), or if the resulting epoch seconds are negative
+        (pre-1970) -- common.Timestamp.epochSeconds is an unsigned (uint64) field and cannot represent them.
     :raises TypeError: if value is not one of the supported types.
     """
     if isinstance(value, common_pb2.Timestamp):
@@ -45,9 +47,11 @@ def to_timestamp(value: TimestampInput) -> common_pb2.Timestamp:
         raise TypeError("to_timestamp() does not accept bool")
 
     if isinstance(value, (int, float)):
-        epoch_seconds = int(value)
+        # Floor the seconds (not truncate toward zero) so the fractional remainder, and therefore
+        # nanoseconds, is always in [0, 1_000_000_000) even for negative epoch inputs.
+        epoch_seconds = math.floor(value)
         nanoseconds = int(round((float(value) - epoch_seconds) * 1_000_000_000))
-        # Guard against float rounding pushing nanoseconds to a full second.
+        # Guard against float rounding pushing nanoseconds up to a full second.
         if nanoseconds >= 1_000_000_000:
             epoch_seconds += 1
             nanoseconds -= 1_000_000_000
@@ -1034,18 +1038,23 @@ class MachineConfigClient(ServiceApiClientBase):
     def _validate_activation_key(client_activation_id: Optional[str], configuration_name: Optional[str],
                                  start_time: Optional[TimestampInput]) -> None:
         """
-        Validates that exactly one activation key form is supplied: either client_activation_id, or the composite
-        (configuration_name and start_time).  Raises ValueError otherwise.
+        Validates that exactly one activation key form is supplied: either a non-empty client_activation_id, or the
+        composite (non-empty configuration_name and a start_time).  Raises ValueError otherwise.  Empty strings count
+        as "not provided" so that a caller error (e.g. an unset id) is caught here rather than silently producing a
+        request with an empty oneof value.  start_time presence is keyed on "is not None" since a valid timestamp may
+        be falsy (epoch 0).
         """
-        has_id = client_activation_id is not None
-        has_composite = configuration_name is not None or start_time is not None
+        has_id = bool(client_activation_id)
+        has_name = bool(configuration_name)
+        has_start = start_time is not None
+        has_composite = has_name or has_start
         if has_id and has_composite:
             raise ValueError(
                 "provide either client_activation_id OR (configuration_name and start_time), not both")
         if not has_id:
-            if configuration_name is None or start_time is None:
+            if not has_name or not has_start:
                 raise ValueError(
-                    "provide client_activation_id, or both configuration_name and start_time")
+                    "provide a non-empty client_activation_id, or both configuration_name and start_time")
 
     # ------------------------------------------------------------------
     # getConfigurationActivation
@@ -1065,7 +1074,7 @@ class MachineConfigClient(ServiceApiClientBase):
         """
         self._validate_activation_key(client_activation_id, configuration_name, start_time)
         request = annotation_pb2.GetConfigurationActivationRequest()
-        if client_activation_id is not None:
+        if client_activation_id:
             self.logger.debug("Building GetConfigurationActivationRequest by clientActivationId: %s",
                               client_activation_id)
             request.clientActivationId = client_activation_id
@@ -1275,7 +1284,7 @@ class MachineConfigClient(ServiceApiClientBase):
         """
         self._validate_activation_key(client_activation_id, configuration_name, start_time)
         request = annotation_pb2.DeleteConfigurationActivationRequest()
-        if client_activation_id is not None:
+        if client_activation_id:
             self.logger.debug("Building DeleteConfigurationActivationRequest by clientActivationId: %s",
                               client_activation_id)
             request.clientActivationId = client_activation_id
