@@ -63,52 +63,87 @@ class TestPvMetadataClientIntegration(unittest.TestCase):
 
     def test_save_get_query_delete_round_trip(self):
         """
-        Exercises the full PV metadata lifecycle against real services: save -> get -> query -> delete.
-
-        Accepts both success and expected business errors as valid, since the goal is to verify communication
-        and request/response handling with real services.
+        Exercises the full PV metadata lifecycle against real services and asserts real success at each step:
+        save -> get by name -> get by alias -> query -> iterate -> delete -> get confirms deletion.
         """
         self.assertIsNotNone(self.client.annotation, "annotation client should be initialized")
         pv_client = self.client.annotation.pv_metadata
 
         timestamp = int(time.time())
         pv_name = f"INTEGRATION:TEST:{timestamp}"
+        alias = f"alias-{timestamp}"
+        tags = ["integration", "test"]
+        attributes = {"framework": "unittest", "timestamp": str(timestamp)}
+        description = "Integration test PV metadata"
+
+        # Ensure the record is cleaned up even if an assertion fails partway through.
+        self.addCleanup(pv_client.delete_pv_metadata, pv_name)
 
         # --- save ---
-        save_params = SavePvMetadataRequestParams(
+        save_result = pv_client.save_pv_metadata(SavePvMetadataRequestParams(
             pv_name=pv_name,
-            aliases=[f"alias-{timestamp}"],
-            tags=["integration", "test"],
-            attributes={"framework": "unittest", "timestamp": str(timestamp)},
+            aliases=[alias],
+            tags=tags,
+            attributes=attributes,
             modified_by="dp-python-lib-integration-test",
-            description="Integration test PV metadata",
-        )
-        save_result = pv_client.save_pv_metadata(save_params)
-        self.assertIsNotNone(save_result.result_status)
-        if save_result.result_status.is_error:
-            self.logger.warning("savePvMetadata returned error: %s", save_result.result_status.message)
-        else:
-            self.logger.info("Saved PV metadata for: %s", save_result.pv_name)
+            description=description,
+        ))
+        self.assertFalse(save_result.result_status.is_error,
+                         f"savePvMetadata failed: {save_result.result_status.message}")
+        self.assertEqual(save_result.pv_name, pv_name)
+        self.logger.info("Saved PV metadata for: %s", save_result.pv_name)
 
-        # --- get ---
+        # --- get by name: all saved fields should round-trip ---
         get_result = pv_client.get_pv_metadata(pv_name)
-        self.assertIsNotNone(get_result.result_status)
-        if not get_result.result_status.is_error:
-            self.logger.info("Retrieved PV metadata: %s", get_result.pv_metadata.pvName)
+        self.assertFalse(get_result.result_status.is_error,
+                         f"getPvMetadata (by name) failed: {get_result.result_status.message}")
+        metadata = get_result.pv_metadata
+        self.assertIsNotNone(metadata, "getPvMetadata should return a PvMetadata record")
+        self.assertEqual(metadata.pvName, pv_name)
+        self.assertIn(alias, list(metadata.aliases))
+        self.assertEqual(sorted(metadata.tags), sorted(tags))
+        self.assertEqual({a.name: a.value for a in metadata.attributes}, attributes)
+        self.assertEqual(metadata.description, description)
+        self.logger.info("Retrieved and verified PV metadata for: %s", metadata.pvName)
 
-        # --- query ---
+        # --- get by alias: should resolve to the same PV ---
+        get_by_alias = pv_client.get_pv_metadata(alias)
+        self.assertFalse(get_by_alias.result_status.is_error,
+                         f"getPvMetadata (by alias) failed: {get_by_alias.result_status.message}")
+        self.assertIsNotNone(get_by_alias.pv_metadata)
+        self.assertEqual(get_by_alias.pv_metadata.pvName, pv_name,
+                         "alias lookup should resolve to the canonical PV name")
+        self.logger.info("Alias %s resolved to PV: %s", alias, get_by_alias.pv_metadata.pvName)
+
+        # --- query by exact name: should return exactly this PV ---
         query_result = pv_client.query_pv_metadata([PvMetadataQuery.pv_name(exact=[pv_name])])
-        self.assertIsNotNone(query_result.result_status)
-        if not query_result.result_status.is_error:
-            self.logger.info("Query returned %d records", len(query_result.pv_metadata_list))
+        self.assertFalse(query_result.result_status.is_error,
+                         f"queryPvMetadata failed: {query_result.result_status.message}")
+        queried_names = [pv.pvName for pv in query_result.pv_metadata_list]
+        self.assertIn(pv_name, queried_names, "query by exact name should return the saved PV")
+        self.logger.info("Query returned %d record(s)", len(query_result.pv_metadata_list))
+
+        # --- iterate by exact name: paging iterator should yield the PV ---
+        iterated_names = [pv.pvName for pv in pv_client.iter_pv_metadata([PvMetadataQuery.pv_name(exact=[pv_name])])]
+        self.assertIn(pv_name, iterated_names, "iter_pv_metadata should yield the saved PV")
+        self.logger.info("Iterator yielded %d record(s)", len(iterated_names))
 
         # --- delete ---
         delete_result = pv_client.delete_pv_metadata(pv_name)
-        self.assertIsNotNone(delete_result.result_status)
-        if not delete_result.result_status.is_error:
-            self.logger.info("Deleted PV metadata for: %s", delete_result.pv_name)
+        self.assertFalse(delete_result.result_status.is_error,
+                         f"deletePvMetadata failed: {delete_result.result_status.message}")
+        self.assertEqual(delete_result.pv_name, pv_name)
+        self.logger.info("Deleted PV metadata for: %s", delete_result.pv_name)
 
-        self.logger.info("PV metadata round-trip integration test completed")
+        # --- get after delete: should now report a business error (not found) ---
+        get_after_delete = pv_client.get_pv_metadata(pv_name)
+        self.assertTrue(get_after_delete.result_status.is_error,
+                        "getPvMetadata after delete should return an error")
+        self.assertIsNone(get_after_delete.pv_metadata)
+        self.logger.info("Confirmed deletion; get after delete returned: %s",
+                         get_after_delete.result_status.message)
+
+        self.logger.info("PV metadata round-trip integration test completed successfully")
 
 
 if __name__ == '__main__':
