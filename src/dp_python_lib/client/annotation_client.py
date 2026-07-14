@@ -2,6 +2,7 @@ import grpc
 import logging
 
 from dp_python_lib.client.pv_metadata_client import PvMetadataClient
+from dp_python_lib.client.machine_config_client import MachineConfigClient
 
 
 class AnnotationClient:
@@ -12,8 +13,9 @@ class AnnotationClient:
 
     Currently exposes:
         - pv_metadata: PvMetadataClient for the PV metadata API methods.
+        - machine_config: MachineConfigClient for the machine configuration API methods.
 
-    Future feature clients (machine configuration, annotations) will be added here as additional attributes.
+    Future feature clients (annotations) will be added here as additional attributes.
     """
 
     def __init__(self, channel: grpc.Channel) -> None:
@@ -23,4 +25,5 @@ class AnnotationClient:
         self.logger = logging.getLogger(__name__)
         self._channel = channel
         self.pv_metadata = PvMetadataClient(channel)
+        self.machine_config = MachineConfigClient(channel)
         self.logger.debug("AnnotationClient initialized with channel: %s", channel)

@@ -14,6 +14,16 @@ from dp_python_lib.client.pv_metadata_client import (
     QueryPvMetadataApiResult,
     DeletePvMetadataApiResult,
 )
+from dp_python_lib.client.machine_config_client import (
+    MachineConfigClient,
+    ConfigurationQuery,
+    to_timestamp,
+    SaveConfigurationRequestParams,
+    SaveConfigurationApiResult,
+    GetConfigurationApiResult,
+    QueryConfigurationsApiResult,
+    DeleteConfigurationApiResult,
+)
 
 __all__ = [
     "MldpClient",
@@ -28,4 +38,12 @@ __all__ = [
     "GetPvMetadataApiResult",
     "QueryPvMetadataApiResult",
     "DeletePvMetadataApiResult",
+    "MachineConfigClient",
+    "ConfigurationQuery",
+    "to_timestamp",
+    "SaveConfigurationRequestParams",
+    "SaveConfigurationApiResult",
+    "GetConfigurationApiResult",
+    "QueryConfigurationsApiResult",
+    "DeleteConfigurationApiResult",
 ]
