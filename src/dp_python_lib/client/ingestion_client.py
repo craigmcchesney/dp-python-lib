@@ -49,7 +49,7 @@ class IngestionClient(ServiceApiClientBase):
         """
         :param channel: gRPC communication channel for Ingestion Service.
         """
-        super().__init__(channel)
+        super().__init__(channel, ingestion_pb2_grpc.DpIngestionServiceStub)
         self.logger = logging.getLogger(__name__)
         self.logger.debug("IngestionClient initialized with channel: %s", channel)
 
@@ -90,11 +90,10 @@ class IngestionClient(ServiceApiClientBase):
         :return: Returns a RegisterProviderApiResult with the method response and status information.
         """
         self.logger.info("Calling registerProvider API for provider: %s", request.providerName)
-        ingestion_stub = ingestion_pb2_grpc.DpIngestionServiceStub(self._channel)
-        
+
         try:
-            self.logger.debug("Invoking ingestion_stub.registerProvider with request")
-            response = ingestion_stub.registerProvider(request)
+            self.logger.debug("Invoking stub.registerProvider with request")
+            response = self._stub.registerProvider(request)
             self.logger.debug("Received response from registerProvider API")
             
             # Check if response contains an exceptional result (error)

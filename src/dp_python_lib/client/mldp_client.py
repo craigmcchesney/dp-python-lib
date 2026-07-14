@@ -3,6 +3,7 @@ import grpc
 import logging
 
 from dp_python_lib.client.ingestion_client import IngestionClient
+from dp_python_lib.client.annotation_client import AnnotationClient
 from dp_python_lib.config import MldpConfig, load_config
 
 
@@ -82,10 +83,17 @@ class MldpClient:
         # Initialize service clients
         self.logger.info("Initializing ingestion client")
         self.ingestion_client = IngestionClient(self._ingestion_channel)
-        
-        # TODO: Add query and annotation clients when implemented
+
+        # Annotation service facade (exposes .pv_metadata, etc.); only created if a channel is available
+        if self._annotation_channel:
+            self.logger.info("Initializing annotation client")
+            self.annotation = AnnotationClient(self._annotation_channel)
+        else:
+            self.logger.debug("No annotation channel provided - annotation client will be None")
+            self.annotation = None
+
+        # TODO: Add query client when implemented
         # self.query_client = QueryClient(self._query_channel) if self._query_channel else None
-        # self.annotation_client = AnnotationClient(self._annotation_channel) if self._annotation_channel else None
         
         # Store config for reference
         self._config = config

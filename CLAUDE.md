@@ -52,7 +52,10 @@ Core dependencies are managed in `pyproject.toml`:
 
 - `src/dp_python_lib/client/mldp_client.py` - Main client wrapper for the gRPC services
 - `src/dp_python_lib/client/ingestion_client.py` - Ingestion service client with methods like `register_provider()`
+- `src/dp_python_lib/client/annotation_client.py` - Annotation service facade; groups feature-scoped clients sharing the one `DpAnnotationService` channel (exposes `.pv_metadata`, with room to grow `.machine_config`, `.annotations`)
+- `src/dp_python_lib/client/pv_metadata_client.py` - PV metadata client (`save_pv_metadata()`, `get_pv_metadata()`, `query_pv_metadata()`, `iter_pv_metadata()`, `delete_pv_metadata()`) plus the `PvMetadataQuery` (`Q`) criterion helpers
 - `tests/unit/test_ingestion_client.py` - Unit tests for IngestionClient functionality
+- `tests/unit/test_pv_metadata_client.py` - Unit tests for PvMetadataClient functionality
 - `pyproject.toml` - Project metadata and dependencies
 - Generated gRPC stubs include services for:
   - Ingestion (`ingestion_pb2.py`, `ingestion_pb2_grpc.py`)
@@ -67,6 +70,13 @@ Core dependencies are managed in `pyproject.toml`:
 - Always write unit tests for new client methods in `tests/unit/`
 - Use parameter classes (e.g., `RegisterProviderRequestParams`) for user-friendly APIs
 - Client methods should return result objects that wrap gRPC responses with error handling
+- Service clients extend `ServiceApiClientBase`, which is constructed with `(channel, stub_class)` and
+  creates the gRPC stub **once** at init time, stored as `self._stub`.  `_send_*` methods reuse
+  `self._stub` rather than creating a new stub per call.
+- Where one gRPC service backs several feature areas (e.g. `DpAnnotationService` covers PV metadata,
+  machine configuration, and annotations), use a lightweight facade (`AnnotationClient`) that owns the
+  shared channel and exposes feature-scoped clients as attributes (`annotation.pv_metadata`).  This
+  keeps each feature client cohesive while matching the single-service reality of the gRPC API.
 
 ### gRPC Error Handling
 - Use **synchronous gRPC calls** with `DpIngestionServiceStub` for simplicity
@@ -188,6 +198,33 @@ client = MldpClient(config=config)
 import grpc
 channel = grpc.insecure_channel("localhost:50051")
 client = MldpClient(ingestion_channel=channel)
+```
+
+### PV Metadata API (Annotation Service)
+PV metadata methods are exposed under the `annotation` facade at `client.annotation.pv_metadata`
+(available whenever an annotation channel/config is provided):
+```python
+from dp_python_lib.client import MldpClient, SavePvMetadataRequestParams, PvMetadataQuery as Q
+
+client = MldpClient()
+pv = client.annotation.pv_metadata
+
+# save (dict attributes, list aliases/tags)
+pv.save_pv_metadata(SavePvMetadataRequestParams(
+    pv_name="ABC:1", aliases=["abc-one"], tags=["vacuum"],
+    attributes={"unit": "V"}, modified_by="operator", description="Vacuum gauge"))
+
+# get / delete by PV name OR alias
+result = pv.get_pv_metadata("abc-one")
+metadata = result.pv_metadata            # common_pb2.PvMetadata, or None on error
+pv.delete_pv_metadata("ABC:1")
+
+# query one page (exposes .pv_metadata_list and .next_page_token)
+page = pv.query_pv_metadata([Q.pv_name(prefix=["ABC:"]), Q.tags(["vacuum"])], limit=100)
+
+# or iterate transparently across all pages (raises RuntimeError on a page error)
+for record in pv.iter_pv_metadata([Q.attributes("unit", ["V"])]):
+    print(record.pvName)
 ```
 
 ### Configuration Priority (High to Low)
