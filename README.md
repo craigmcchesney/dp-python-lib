@@ -64,6 +64,61 @@ The Annotation Service PV metadata API is accessed via the `annotation` facade, 
         delete_result = pv_client.delete_pv_metadata("ABC:1")
 ```
 
+The Annotation Service machine configuration API is exposed under `client.annotation.machine_config`.  It manages named machine *configurations* and their temporal *activations* (which configuration was active over a given time interval), plus a point-in-time "what is active now" lookup:
+```
+        from datetime import datetime, timezone
+        from dp_python_lib.client import (
+            SaveConfigurationRequestParams,
+            SaveConfigurationActivationRequestParams,
+            ConfigurationQuery as C,
+            ConfigurationActivationQuery as CA,
+        )
+
+        mc = client.annotation.machine_config
+
+        # Save a configuration
+        mc.save_configuration(SaveConfigurationRequestParams(
+            configuration_name="beamline-optics",
+            category="optics",
+            tags=["production"],
+            attributes={"owner": "ops"},
+            modified_by="operator",
+        ))
+
+        # Get / query / iterate configurations
+        config = mc.get_configuration("beamline-optics").configuration
+        for cfg in mc.iter_configurations([C.name(prefix=["beamline-"]), C.tags(["production"])]):
+            print(cfg.configurationName)
+
+        # Record that the configuration was active over a time interval.  Timestamps accept a
+        # timezone-aware datetime, epoch seconds, or a common.Timestamp.
+        start = datetime(2024, 1, 1, tzinfo=timezone.utc)
+        end = datetime(2024, 1, 2, tzinfo=timezone.utc)
+        mc.save_configuration_activation(SaveConfigurationActivationRequestParams(
+            configuration_name="beamline-optics",
+            start_time=start,
+            end_time=end,
+            client_activation_id="act-001",
+            modified_by="operator",
+        ))
+
+        # Get an activation by client id, or by the (configuration_name, start_time) composite key
+        act = mc.get_configuration_activation(client_activation_id="act-001").configuration_activation
+        act = mc.get_configuration_activation(
+            configuration_name="beamline-optics", start_time=start).configuration_activation
+
+        # Query / iterate activations
+        for a in mc.iter_configuration_activations([CA.configuration_name(["beamline-optics"])]):
+            print(a.clientActivationId)
+
+        # What configurations are active right now? (pass a timestamp for a historical instant)
+        active = mc.get_active_configurations().configuration_activations
+
+        # Delete
+        mc.delete_configuration_activation(client_activation_id="act-001")
+        mc.delete_configuration("beamline-optics")
+```
+
 This same pattern will be utilized for calling all the various service APIs.  The intention of the MldpClient class is to hide the details of the gRPC APIs to the extent that is possible.  A good place to look for additional examples is in the [integration test directory](tests/integration).
 
 ## TODO
@@ -83,6 +138,7 @@ This same pattern will be utilized for calling all the various service APIs.  Th
     * querySamples() - Retrieves PV samples.
   * Annotation Service
     * PV metadata API - DONE (client.annotation.pv_metadata): savePvMetadata(), getPvMetadata(), queryPvMetadata(), deletePvMetadata().
+    * Machine configuration API - DONE (client.annotation.machine_config): saveConfiguration(), getConfiguration(), queryConfigurations(), deleteConfiguration(), saveConfigurationActivation(), getConfigurationActivation(), queryConfigurationActivations(), deleteConfigurationActivation(), getActiveConfigurations().
     * saveDataSet() - Creates or saves a dataset including a collection of PVs and time ranges.
     * queryDataSets() - Retrieves saved datasets.
     * saveAnnotation() - Creates or saves an annotation targeting a dataset.

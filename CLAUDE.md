@@ -52,10 +52,13 @@ Core dependencies are managed in `pyproject.toml`:
 
 - `src/dp_python_lib/client/mldp_client.py` - Main client wrapper for the gRPC services
 - `src/dp_python_lib/client/ingestion_client.py` - Ingestion service client with methods like `register_provider()`
-- `src/dp_python_lib/client/annotation_client.py` - Annotation service facade; groups feature-scoped clients sharing the one `DpAnnotationService` channel (exposes `.pv_metadata`, with room to grow `.machine_config`, `.annotations`)
+- `src/dp_python_lib/client/annotation_client.py` - Annotation service facade; groups feature-scoped clients sharing the one `DpAnnotationService` channel (exposes `.pv_metadata` and `.machine_config`, with room to grow `.annotations`)
 - `src/dp_python_lib/client/pv_metadata_client.py` - PV metadata client (`save_pv_metadata()`, `get_pv_metadata()`, `query_pv_metadata()`, `iter_pv_metadata()`, `delete_pv_metadata()`) plus the `PvMetadataQuery` (`Q`) criterion helpers
+- `src/dp_python_lib/client/machine_config_client.py` - Machine configuration client covering both configurations (`save_configuration()`, `get_configuration()`, `query_configurations()`, `iter_configurations()`, `delete_configuration()`) and their temporal activations (`save_configuration_activation()`, `get_configuration_activation()`, `query_configuration_activations()`, `iter_configuration_activations()`, `delete_configuration_activation()`, `get_active_configurations()`). Includes the `ConfigurationQuery` (`C`) and `ConfigurationActivationQuery` (`CA`) criterion helpers and the `to_timestamp()` helper (tz-aware datetime / epoch seconds / `common.Timestamp`). Get/delete activation take a composite key (`client_activation_id` XOR `configuration_name`+`start_time`)
 - `tests/unit/test_ingestion_client.py` - Unit tests for IngestionClient functionality
 - `tests/unit/test_pv_metadata_client.py` - Unit tests for PvMetadataClient functionality
+- `tests/unit/test_machine_config_client.py` - Unit tests for the Configuration side of MachineConfigClient
+- `tests/unit/test_machine_config_activation_client.py` - Unit tests for the ConfigurationActivation side of MachineConfigClient (incl. composite-key validation, timestamp handling, getActiveConfigurations)
 - `pyproject.toml` - Project metadata and dependencies
 - Generated gRPC stubs include services for:
   - Ingestion (`ingestion_pb2.py`, `ingestion_pb2_grpc.py`)
@@ -226,6 +229,58 @@ page = pv.query_pv_metadata([Q.pv_name(prefix=["ABC:"]), Q.tags(["vacuum"])], li
 for record in pv.iter_pv_metadata([Q.attributes("unit", ["V"])]):
     print(record.pvName)
 ```
+
+### Machine Configuration API (Annotation Service)
+Machine configuration methods are exposed under the `annotation` facade at `client.annotation.machine_config`.
+The client covers named *configurations* and their temporal *activations*, plus a point-in-time active lookup:
+```python
+from datetime import datetime, timezone
+from dp_python_lib.client import (
+    MldpClient,
+    SaveConfigurationRequestParams,
+    SaveConfigurationActivationRequestParams,
+    ConfigurationQuery as C,
+    ConfigurationActivationQuery as CA,
+)
+
+client = MldpClient()
+mc = client.annotation.machine_config
+
+# configurations: save / get / query / iterate / delete
+mc.save_configuration(SaveConfigurationRequestParams(
+    configuration_name="beamline-optics", category="optics",
+    tags=["production"], attributes={"owner": "ops"}, modified_by="operator"))
+config = mc.get_configuration("beamline-optics").configuration
+for cfg in mc.iter_configurations([C.name(prefix=["beamline-"]), C.tags(["production"])]):
+    print(cfg.configurationName)
+
+# activations: timestamps accept a tz-aware datetime, epoch seconds, or common.Timestamp
+start = datetime(2024, 1, 1, tzinfo=timezone.utc)
+end = datetime(2024, 1, 2, tzinfo=timezone.utc)
+mc.save_configuration_activation(SaveConfigurationActivationRequestParams(
+    configuration_name="beamline-optics", start_time=start, end_time=end,
+    client_activation_id="act-001", modified_by="operator"))
+
+# get/delete activation by client id OR by (configuration_name, start_time) composite key
+mc.get_configuration_activation(client_activation_id="act-001")
+mc.get_configuration_activation(configuration_name="beamline-optics", start_time=start)
+
+# query/iterate activations (raises RuntimeError on a page error)
+for a in mc.iter_configuration_activations([CA.configuration_name(["beamline-optics"])]):
+    print(a.clientActivationId)
+
+# what is active right now? (pass a timestamp for a historical instant)
+active = mc.get_active_configurations().configuration_activations
+
+mc.delete_configuration_activation(client_activation_id="act-001")
+mc.delete_configuration("beamline-optics")
+```
+
+Notes:
+- `to_timestamp()` (also exported) is the shared time converter; naive datetimes raise `ValueError`.
+- Composite-key get/delete require exactly one key form (id XOR name+start_time); violations raise `ValueError`.
+- `ConfigurationQuery` (`C`) criteria: `name`/`category`/`tags`/`attributes`/`parent`.
+  `ConfigurationActivationQuery` (`CA`) criteria: `timestamp`/`time_range`/`configuration_name`/`client_activation_id`/`category`/`tags`/`attributes`.  Each helper raises `ValueError` on empty inputs.
 
 ### Configuration Priority (High to Low)
 1. **Explicit parameters** (direct channels, config objects)
