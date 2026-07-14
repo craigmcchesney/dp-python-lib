@@ -404,7 +404,7 @@ class PvMetadataClient(ServiceApiClientBase):
         self.logger.debug("Building QueryPvMetadataRequest with %d criteria", len(criteria))
         request = annotation_pb2.QueryPvMetadataRequest()
         request.criteria.extend(criteria)
-        if limit:
+        if limit is not None:
             request.limit = limit
         if page_token:
             request.pageToken = page_token
