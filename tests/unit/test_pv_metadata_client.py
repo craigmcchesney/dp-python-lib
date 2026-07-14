@@ -117,6 +117,26 @@ class TestPvMetadataQueryHelpers(unittest.TestCase):
         self.assertEqual(c.attributesCriterion.key, "unit")
         self.assertEqual(list(c.attributesCriterion.values), ["V", "A"])
 
+    def test_pv_name_empty_raises(self):
+        with self.assertRaises(ValueError):
+            PvMetadataQuery.pv_name()
+        with self.assertRaises(ValueError):
+            PvMetadataQuery.pv_name(exact=[], prefix=[], contains=[])
+
+    def test_aliases_empty_raises(self):
+        with self.assertRaises(ValueError):
+            PvMetadataQuery.aliases()
+
+    def test_tags_empty_raises(self):
+        with self.assertRaises(ValueError):
+            PvMetadataQuery.tags([])
+
+    def test_attributes_empty_raises(self):
+        with self.assertRaises(ValueError):
+            PvMetadataQuery.attributes("", ["V"])
+        with self.assertRaises(ValueError):
+            PvMetadataQuery.attributes("unit", [])
+
 
 class TestSendSavePvMetadata(unittest.TestCase):
 

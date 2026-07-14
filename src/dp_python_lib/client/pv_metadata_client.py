@@ -31,7 +31,10 @@ class PvMetadataQuery:
         :param prefix: PV name prefixes to match.
         :param contains: Substrings the PV name must contain.
         :return: A QueryPvMetadataCriterion with a pvNameCriterion.
+        :raises ValueError: if none of exact/prefix/contains is provided and non-empty.
         """
+        if not (exact or prefix or contains):
+            raise ValueError("pv_name() requires at least one non-empty of exact/prefix/contains")
         criterion = PvMetadataQuery._Criterion()
         name_criterion = criterion.pvNameCriterion
         if exact:
@@ -51,7 +54,10 @@ class PvMetadataQuery:
         :param prefix: Alias prefixes to match.
         :param contains: Substrings the alias must contain.
         :return: A QueryPvMetadataCriterion with an aliasesCriterion.
+        :raises ValueError: if none of exact/prefix/contains is provided and non-empty.
         """
+        if not (exact or prefix or contains):
+            raise ValueError("aliases() requires at least one non-empty of exact/prefix/contains")
         criterion = PvMetadataQuery._Criterion()
         aliases_criterion = criterion.aliasesCriterion
         if exact:
@@ -68,7 +74,10 @@ class PvMetadataQuery:
         Builds a criterion matching PVs having any of the specified tags.
         :param values: Tag values to match.
         :return: A QueryPvMetadataCriterion with a tagsCriterion.
+        :raises ValueError: if values is empty.
         """
+        if not values:
+            raise ValueError("tags() requires a non-empty values list")
         criterion = PvMetadataQuery._Criterion()
         criterion.tagsCriterion.values[:] = values
         return criterion
@@ -80,7 +89,12 @@ class PvMetadataQuery:
         :param key: Attribute key to match.
         :param values: Attribute values to match for that key.
         :return: A QueryPvMetadataCriterion with an attributesCriterion.
+        :raises ValueError: if key is empty or values is empty.
         """
+        if not key:
+            raise ValueError("attributes() requires a non-empty key")
+        if not values:
+            raise ValueError("attributes() requires a non-empty values list")
         criterion = PvMetadataQuery._Criterion()
         criterion.attributesCriterion.key = key
         criterion.attributesCriterion.values[:] = values

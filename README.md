@@ -76,9 +76,11 @@ This same pattern will be utilized for calling all the various service APIs.  Th
   * Query Service
     * queryData() - Retrieves bucketed PV time-series data.
     * queryTable() - Retrieves PV time-series data in tabular format.
-    * queryPvMetadata() - Retrieves ingestion metadata for PVs.
+    * queryPvStats() - Retrieves archive ingestion statistics for PVs (renamed from queryPvMetadata(); note user-defined PV metadata is now served by DpAnnotationService, see below).
     * queryProviders() - Retrieves Provider information.
-    * queryProviderMetadata() - Retrieves ingestion metadata for providers.
+    * queryProviderStats() - Retrieves archive ingestion statistics for providers (renamed from queryProviderMetadata()).
+    * queryBuckets() - Retrieves raw data buckets.
+    * querySamples() - Retrieves PV samples.
   * Annotation Service
     * PV metadata API - DONE (client.annotation.pv_metadata): savePvMetadata(), getPvMetadata(), queryPvMetadata(), deletePvMetadata().
     * saveDataSet() - Creates or saves a dataset including a collection of PVs and time ranges.

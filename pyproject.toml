@@ -5,9 +5,12 @@ description = "Python client library for the MLDP gRPC API"
 requires-python = ">=3.10"
 
 dependencies = [
-  "grpcio",
-  "grpcio-tools",
-  "protobuf",
+  # Minimums match what the generated gRPC stubs hard-require at import time
+  # (see GRPC_GENERATED_VERSION / ValidateProtobufRuntimeVersion in src/dp_python_lib/grpc);
+  # keep these in sync with the stub generator when regenerating.
+  "grpcio>=1.82.1",
+  "grpcio-tools>=1.82.1",
+  "protobuf>=7.35.0",
   "pydantic-settings",
   "PyYAML",
 ]
